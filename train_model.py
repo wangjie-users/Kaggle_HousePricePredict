@@ -20,6 +20,7 @@ def dataProcessing(trainData, testData):
     train_df = trainData
     test_df = testData
 
+    #原始数据并不是正态分布，因此需要通过log(x+1)变化转化为正态分布，只有当数据服从正态分布时，才能进行后续的标准化
     train_y = np.log1p(train_df.pop('SalePrice')) #将label从train_df中提取出来，以进行合并train_x和test_x，
     all_df = pd.concat((train_df, test_df), axis=0) #合并，axis=0表示把test_df加到train_df后边
 
@@ -66,7 +67,7 @@ def model_Ridge(X_train, Y_train, X_test): #用岭回归建模，岭回归可以
     #下面进行预测
     ridge = Ridge(alpha = optimal_alpha)
     ridge.fit(x_train, y_train)
-    y_pred = np.expm1(ridge.predict(X_test))
+    y_pred = np.expm1(ridge.predict(X_test)) #因为原始数据是做过Log处理的，因此这里需要通过expml还原
     return  alphas, test_scores, y_pred
 
 def summsion_csv(pred_y, Test): #kaggle提交
