@@ -1,6 +1,6 @@
 
 '''
-created in 2018/4/34
+created in 2018/4/24
 @author Jie Wang
 Kaggle_HousePrice_Predict
 
@@ -56,7 +56,9 @@ def model_Ridge(X_train, Y_train, X_test): #用岭回归建模，岭回归可以
     alphas = np.logspace(-3, 2, 50)
     test_scores = []
     min_score = 1
-    for alpha in alphas:#通过交叉验证，找到最优参数
+
+    # 通过交叉验证，找到最优参数
+    for alpha in alphas:
         clf = Ridge(alpha)
         test_score = np.sqrt(-cross_val_score(clf, x_train, y_train, cv=10, scoring='neg_mean_squared_error'))
         test_scores.append(np.mean(test_score))
@@ -68,7 +70,7 @@ def model_Ridge(X_train, Y_train, X_test): #用岭回归建模，岭回归可以
     ridge = Ridge(alpha = optimal_alpha)
     ridge.fit(x_train, y_train)
     y_pred = np.expm1(ridge.predict(X_test)) #因为原始数据是做过Log处理的，因此这里需要通过expml还原
-    return  alphas, test_scores, y_pred
+    return  optimal_alpha, test_scores, y_pred
 
 def summsion_csv(pred_y, Test): #kaggle提交
     submmision_df = pd.DataFrame(data = {'Id':Test.index, 'SalePrice': pred_y})
@@ -79,6 +81,7 @@ if __name__ == '__main__':
     test = pd.read_csv("test.csv", index_col=0)
     dummy_train_DF, dummy_test_DF, train_Y = dataProcessing(train, test)
     Alphas, test_Scores, Y_pred = model_Ridge(dummy_train_DF, train_Y, dummy_test_DF)
+    print(Alphas)
     print(Y_pred)
     summsion_csv(Y_pred, test)
 
